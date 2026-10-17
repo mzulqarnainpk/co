@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zyphora Growth - B2B Lead Generation & Sales Development Agency</title>
+    <meta name="description" content="Zyphora Growth helps businesses identify ideal prospects, connect with international decision-makers, and build qualified sales pipelines.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandBg: '#FAF8F2',
+                        brandBgSecondary: '#F1EDE3',
+                        brandText: '#20251F',
+                        brandTextSecondary: '#6B7068',
+                        brandAccent: '#71845B',
+                        brandDark: '#20251F',
+                        brandBorder: '#E5E0D5',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- React & React DOM CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    
+    <!-- React Router CDN -->
+    <script src="https://unpkg.com/@remix-run/router@1.15.1/dist/router.umd.min.js"></script>
+    <script src="https://unpkg.com/react-router@6.22.2/dist/umd/react-router.production.min.js"></script>
+    <script src="https://unpkg.com/react-router-dom@6.22.2/dist/umd/react-router-dom.production.min.js"></script>
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Babel Standalone for JSX parsing in single-file script -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        body {
+            background-color: #FAF8F2;
+            color: #20251F;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+        const { HashRouter: Router, Routes, Route, Link, useLocation, useNavigate } = ReactRouterDOM;
+
+        // Configuration Data
+        const SITE_CONFIG = {
+            companyName: "Zyphora Growth",
+            tagline: "B2B Lead Generation & Sales Development Agency",
+            founder: {
+                name: "Muhammad Zulqarnain",
+                title: "Founder & B2B Growth Strategist",
+                bio: "Specializing in B2B lead generation, sales development, LinkedIn prospecting, cold email outreach, and business development. Focused on helping businesses identify qualified prospects, engage relevant decision-makers, and develop structured sales pipelines.",
+                linkedin: "https://www.linkedin.com/in/chmzulqarnain",
+                email: "zyphoragrowth@gmail.com",
+                whatsapp: "+92323967276",
+                formattedPhone: "+92 323 967276",
+            },
+            social: {
+                linkedin: "https://www.linkedin.com/company/zyphoragrowth",
+                whatsapp: "https://wa.me/92323967276",
+                email: "mailto:zyphoragrowth@gmail.com"
+            }
+        };
+
+        const SERVICES_DATA = [
+            {
+                id: "lead-gen",
+                title: "B2B Lead Generation",
+                shortDesc: "Targeted prospect research and verified lead list building tailored to your Ideal Customer Profile.",
+                deliverables: [
+                    "Ideal Customer Profile (ICP) definition & refinement",
+                    "Company & industry niche research",
+                    "Decision-maker identification (C-Level, VP, Director)",
+                    "Business email research & direct dial verification",
+                    "Lead list building with real-time data enrichment"
+                ]
+            },
+            {
+                id: "sdr",
+                title: "Sales Development Representative (SDR)",
+                shortDesc: "Dedicated SDR support to handle early-stage outreach, follow-ups, and lead qualification.",
+                deliverables: [
+                    "Proactive multi-channel prospect engagement",
+                    "Hyper-personalized 1-to-1 cold outreach execution",
+                    "Structured follow-up sequences & objection handling",
+                    "Initial prospect qualification against BANT criteria",
+                    "Seamless meeting coordination for your account executives"
+                ]
+            },
+            {
+                id: "biz-dev",
+                title: "Business Development",
+                shortDesc: "Identify new international markets, high-value strategic partnerships, and commercial accounts.",
+                deliverables: [
+                    "Global target market & expansion research",
+                    "Target account list development (ABM strategy)",
+                    "Partnership & strategic alliance prospecting",
+                    "Commercial opportunity identification",
+                    "Outreach support for enterprise-level deals"
+                ]
+            },
+            {
+                id: "crm-management",
+                title: "CRM Management & Hygiene",
+                shortDesc: "Maintain organized, enriched CRM data so your sales team never loses track of valuable deals.",
+                deliverables: [
+                    "Contact & company record data structuring",
+                    "Custom pipeline stage setup & lead status mapping",
+                    "Data deduplication, enrichment, and hygiene audit",
+                    "Sales pipeline activity tracking & reporting",
+                    "Automated follow-up workflows & task reminders"
+                ]
+            },
+            {
+                id: "cold-email",
+                title: "Cold Email Marketing",
+                shortDesc: "Hyper-targeted cold email campaigns engineered to spark meaningful business conversations.",
+                deliverables: [
+                    "Audience segment & buyer persona deep-dives",
+                    "Conversion-focused email copywriting & personalization",
+                    "Technical domain setup, SPF/DKIM/DMARC deliverability",
+                    "Automated multi-step follow-up sequences",
+                    "A/B testing, open/reply tracking & compliance handling"
+                ]
+            },
+            {
+                id: "linkedin-growth",
+                title: "LinkedIn Growth & Optimization",
+                shortDesc: "Position your key executive profiles to attract international decision-makers naturally.",
+                deliverables: [
+                    "Headline, summary & experience section optimization",
+                    "Company Page branding & position strategy",
+                    "Thought-leadership content strategy & planning",
+                    "Targeted connection growth & network expansion",
+                    "Strategic engagement with target account content"
+                ]
+            },
+            {
+                id: "verification-guidance",
+                title: "Company Page Verification Guidance",
+                shortDesc: "Strategic guidance on LinkedIn organization verification and authority establishment.",
+                deliverables: [
+                    "LinkedIn Organization verification eligibility audit",
+                    "Required domain and official documentation review",
+                    "Page authority optimization & setup checklist",
+                    "Trust badge & credibility positioning guidance"
+                ]
+            },
+            {
+                id: "meeting-booking",
+                title: "International Meeting Booking",
+                shortDesc: "End-to-end appointment setting with qualified decision-makers across US, UK, Europe & GCC.",
+                deliverables: [
+                    "Custom prospect qualification scoring",
+                    "Multi-timezone calendar coordination",
+                    "Pre-meeting briefing & agenda confirmation",
+                    "Automated reminders to reduce no-show rates",
+                    "Detailed lead handoff summaries for your sales call"
+                ]
+            }
+        ];
+
+        const PORTFOLIO_PROJECTS = [
+            {
+                id: "medtech-usa",
+                category: "Healthcare",
+                title: "Surgical Instrument Exporter � North America Expansion",
+                industry: "Medical & Surgical Manufacturing",
+                challenge: "A surgical equipment manufacturer wanted to enter the North American clinic and distributor market but lacked verified contacts for hospital procurement heads.",
+                strategy: "Built a curated list of 1,200+ verified procurement directors and launched a value-first cold email strategy focusing on ISO certifications and direct factory pricing.",
+                outcomes: "Structured 350+ validated C-level leads, opened dialogues with 28 healthcare buyers, and established 4 active distributor negotiations in 90 days.",
+                deliverables: ["B2B Lead Generation", "Cold Email Marketing", "CRM Setup"]
+            },
+            {
+                id: "logistics-gcc",
+                category: "Logistics",
+                title: "Freight Forwarding Agency � GCC Supply Chain Pipeline",
+                industry: "Logistics & Supply Chain",
+                challenge: "The agency needed to connect with supply chain heads at middle-market e-commerce and retail firms in Dubai, Riyadh, and Doha.",
+                strategy: "Utilized LinkedIn Sales Navigator research combined with multi-channel follow-ups targeting Vice Presidents of Operations and Logistics Managers.",
+                outcomes: "Identified 850 high-match decision-makers and coordinated 18 high-value discovery meetings across the GCC region.",
+                deliverables: ["SDR Support", "LinkedIn Outreach", "Appointment Setting"]
+            },
+            {
+                id: "it-software-eu",
+                category: "IT & Software",
+                title: "Custom Software House � European Enterprise Clients",
+                industry: "IT Services & Software",
+                challenge: "Low response rates on generic email campaigns to European Chief Technology Officers (CTOs) for custom software outsourcing.",
+                strategy: "Shifted to hyper-personalized, account-based outreach focusing on specific tech stack pain points, regional compliance (GDPR), and client portfolio case studies.",
+                outcomes: "Achieved a 42% email open rate, 12% response rate, and generated �180k+ in pipeline opportunities over two quarters.",
+                deliverables: ["Target Account Prospecting", "Cold Email Copywriting", "Lead Qualification"]
+            },
+            {
+                id: "consulting-uk",
+                category: "Consulting",
+                title: "Management Consultancy � UK Mid-Market Advisory",
+                industry: "Consulting & Professional Services",
+                challenge: "A boutique consultancy required consistent meetings with CFOs and Managing Directors looking for financial restructuring guidance.",
+                strategy: "Created an executive LinkedIn thought-leadership profile for the Founder paired with personalized connection requests and concise value propositions.",
+                outcomes: "Grew founder target network by 1,100 relevant executives and secured 14 consultation bookings within 60 days.",
+                deliverables: ["LinkedIn Profile Optimization", "Executive Positioning", "Meeting Coordination"]
+            },
+            {
+                id: "manufacturing-us",
+                category: "Manufacturing",
+                title: "Industrial Parts Manufacturer � US OEM Accounts",
+                industry: "Manufacturing & Industrial",
+                challenge: "Traditional trade show leads were drying up; needed a predictable, inbound-outbound digital sales pipeline.",
+                strategy: "Implemented an SDR-as-a-Service model to research OEM plant managers, verify direct emails, and execute a structured 5-step email follow-up sequence.",
+                outcomes: "Mapped out 1,500 target accounts and achieved 22 qualified RFQs (Request for Quotes) within 4 months.",
+                deliverables: ["B2B Prospect Research", "Cold Email Campaigns", "SDR Execution"]
+            }
+        ];
+
+        // Helper Icon Component
+        const Icon = ({ name, className = "w-5 h-5" }) => {
+            useEffect(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }, [name]);
+            return <i data-lucide={name} className={className}></i>;
+        };
+
+        // Scroll to Top on route change
+        const ScrollToTop = () => {
+            const { pathname } = useLocation();
+            useEffect(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, [pathname]);
+            return null;
+        };
+
+        // Booking Modal
+        const BookingModal = ({ isOpen, onClose }) => {
+            if (!isOpen) return null;
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+                    <div className="bg-[#FAF8F2] border border-[#E5E0D5] rounded-2xl max-w-lg w-full p-6 md:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+                        <button 
+                            onClick={onClose}
+                            className="absolute top-4 right-4 text-[#6B7068] hover:text-[#20251F] p-2 rounded-full hover:bg-[#F1EDE3] transition-colors"
+                        >
+                            <Icon name="x" className="w-5 h-5" />
+                        </button>
+
+                        <div className="text-center mb-6">
+                            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#71845B]/10 text-[#71845B] mb-3">
+                                <Icon name="calendar" className="w-6 h-6" />
+                            </div>
+                            <h3 className="text-2xl font-serif text-[#20251F] font-bold">Schedule Your Strategy Call</h3>
+                            <p className="text-sm text-[#6B7068] mt-2">
+                                Select a convenient time with our B2B Growth Team to review your sales goals.
+                            </p>
+                        </div>
+
+                        <div className="bg-white p-5 rounded-xl border border-[#E5E0D5] mb-6 space-y-4">
+                            <div className="flex items-start space-x-3 text-left">
+                                <Icon name="check-circle" className="w-5 h-5 text-[#71845B] shrink-0 mt-0.5" />
+                                <div>
+                                    <h4 className="text-sm font-semibold text-[#20251F]">30-Minute Discovery Session</h4>
+                                    <p className="text-xs text-[#6B7068]">We review your Ideal Customer Profile and current sales bottlenecks.</p>
+                                </div>
+                            </div>
+                            <div className="flex items-start space-x-3 text-left">
+                                <Icon name="check-circle" className="w-5 h-5 text-[#71845B] shrink-0 mt-0.5" />
+                                <div>
+                                    <h4 className="text-sm font-semibold text-[#20251F]">Actionable Growth Roadmap</h4>
+                                    <p className="text-xs text-[#6B7068]">Get clear insights into decision-maker research & outreach potential.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-3">
+                            <a
+                                href={SITE_CONFIG.social.whatsapp}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full py-3.5 px-4 bg-[#20251F] text-white rounded-xl font-medium hover:bg-[#333a32] transition-colors flex items-center justify-center space-x-2"
+                            >
+                                <Icon name="message-square" className="w-4 h-4 text-[#71845B]" />
+                                <span>Instant Booking via WhatsApp</span>
+                            </a>
+                            <Link
+                                to="/contact"
+                                onClick={onClose}
+                                className="w-full py-3.5 px-4 bg-white border border-[#E5E0D5] text-[#20251F] rounded-xl font-medium hover:bg-[#F1EDE3] transition-colors flex items-center justify-center space-x-2 text-center"
+                            >
+                                <Icon name="mail" className="w-4 h-4 text-[#6B7068]" />
+                                <span>Fill Brief Contact Form</span>
+                            </Link>
+                        </div>
+
+                        <p className="text-xs text-center text-[#6B7068] mt-4">
+                            Direct Contact: {SITE_CONFIG.founder.email} | {SITE_CONFIG.founder.formattedPhone}
+                        </p>
+                    </div>
+                </div>
+            );
+        };
+
+        // Navigation Bar
+        const Navbar = ({ onOpenBooking }) => {
+            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+            const [scrolled, setScrolled] = useState(false);
+            const location = useLocation();
+
+            useEffect(() => {
+                const handleScroll = () => setScrolled(window.scrollY > 20);
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            const navLinks = [
+                { name: "Home", path: "/" },
+                { name: "Team", path: "/team" },
+                { name: "Services", path: "/services" },
+                { name: "Portfolio", path: "/portfolio" },
+                { name: "Contact Us", path: "/contact" }
+            ];
+
+            return (
+                <header className={`sticky top-0 z-40 transition-all duration-300 ${
+                    scrolled 
+                        ? "bg-[#FAF8F2]/90 backdrop-blur-md border-b border-[#E5E0D5] shadow-sm py-3" 
+                        : "bg-[#FAF8F2] py-5 border-b border-[#E5E0D5]/50"
+                }`}>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex items-center justify-between">
+                            
+                            <Link to="/" className="flex items-center space-x-2 group">
+                                <div className="w-10 h-10 rounded-xl bg-[#20251F] flex items-center justify-center text-white font-serif text-xl font-bold tracking-tight shadow-sm group-hover:bg-[#71845B] transition-colors">
+                                    Z
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="font-serif text-xl font-bold text-[#20251F] tracking-tight group-hover:text-[#71845B] transition-colors">
+                                        Zyphora <span className="font-sans font-light text-[#71845B]">Growth</span>
+                                    </span>
+                                    <span className="text-[10px] uppercase tracking-widest text-[#6B7068] font-semibold -mt-1">
+                                        B2B Lead Generation
+                                    </span>
+                                </div>
+                            </Link>
+
+                            <nav className="hidden md:flex items-center space-x-8">
+                                {navLinks.map((link) => {
+                                    const isActive = location.pathname === link.path;
+                                    return (
+                                        <Link
+                                            key={link.path}
+                                            to={link.path}
+                                            className={`text-sm font-medium transition-colors relative py-1 ${
+                                                isActive ? "text-[#20251F] font-semibold" : "text-[#6B7068] hover:text-[#20251F]"
+                                            }`}
+                                        >
+                                            {link.name}
+                                            {isActive && (
+                                                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#71845B] rounded-full" />
+                                            )}
+                                        </Link>
+                                    );
+                                })}
+                            </nav>
+
+                            <div className="hidden md:flex items-center space-x-4">
+                                <button
+                                    onClick={onOpenBooking}
+                                    className="py-2.5 px-5 rounded-xl bg-[#20251F] text-white text-sm font-medium hover:bg-[#71845B] transition-all shadow-sm flex items-center space-x-2"
+                                >
+                                    <span>Book a Consultation</span>
+                                    <Icon name="arrow-right" className="w-4 h-4" />
+                                </button>
+                            </div>
+
+                            <div className="md:hidden flex items-center">
+                                <button
+                                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                                    className="p-2 rounded-lg text-[#20251F] hover:bg-[#F1EDE3] transition-colors"
+                                >
+                                    <Icon name={mobileMenuOpen ? "x" : "menu"} className="w-6 h-6" />
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    {mobileMenuOpen && (
+                        <div className="md:hidden bg-[#FAF8F2] border-b border-[#E5E0D5] px-4 pt-3 pb-6 space-y-3 animate-fade-in">
+                            {navLinks.map((link) => {
+                                const isActive = location.pathname === link.path;
+                                return (
+                                    <Link
+                                        key={link.path}
+                                        to={link.path}
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className={`block px-3 py-2.5 rounded-lg text-base font-medium transition-colors ${
+                                            isActive
+                                                ? "bg-[#F1EDE3] text-[#20251F] font-semibold border-l-4 border-[#71845B]"
+                                                : "text-[#6B7068] hover:bg-[#F1EDE3]/50 hover:text-[#20251F]"
+                                        }`}
+                                    >
+                                        {link.name}
+                                    </Link>
+                                );
+                            })}
+                            <div className="pt-2">
+                                <button
+                                    onClick={() => {
+                                        setMobileMenuOpen(false);
+                                        onOpenBooking();
+                                    }}
+                                    className="w-full py-3 px-4 rounded-xl bg-[#20251F] text-white text-center font-medium hover:bg-[#71845B] transition-colors shadow-sm flex items-center justify-center space-x-2"
+                                >
+                                    <Icon name="calendar" className="w-4 h-4" />
+                                    <span>Book a Consultation</span>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </header>
+            );
+        };
+
+        // Footer Component
+        const Footer = () => (
+            <footer className="bg-[#20251F] text-[#FAF8F2] pt-16 pb-12 border-t border-[#333A32]">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-white/10">
+                        
+                        <div className="lg:col-span-2 space-y-4">
+                            <div className="flex items-center space-x-2">
+                                <div className="w-8 h-8 rounded-lg bg-[#71845B] flex items-center justify-center text-white font-serif font-bold text-lg">
+                                    Z
+                                </div>
+                                <span className="font-serif text-2xl font-bold tracking-tight text-white">
+                                    Zyphora <span className="text-[#71845B]">Growth</span>
+                                </span>
+                            </div>
+                            <p className="text-sm text-gray-300 max-w-sm leading-relaxed">
+                                International B2B lead generation and sales development agency helping companies target decision-makers, build qualified lead pipelines, and expand into global markets.
+                            </p>
+                        </div>
+
+                        <div className="space-y-3">
+                            <h4 className="text-sm font-semibold uppercase tracking-wider text-[#71845B]">Navigation</h4>
+                            <ul className="space-y-2 text-sm text-gray-300">
+                                <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
+                                <li><Link to="/team" className="hover:text-white transition-colors">Team & Strategy</Link></li>
+                                <li><Link to="/services" className="hover:text-white transition-colors">Our Services</Link></li>
+                                <li><Link to="/portfolio" className="hover:text-white transition-colors">Case Studies</Link></li>
+                                <li><Link to="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
+                            </ul>
+                        </div>
+
+                        <div className="space-y-3">
+                            <h4 className="text-sm font-semibold uppercase tracking-wider text-[#71845B]">Services</h4>
+                            <ul className="space-y-2 text-sm text-gray-300">
+                                <li><Link to="/services" className="hover:text-white transition-colors">B2B Lead Generation</Link></li>
+                                <li><Link to="/services" className="hover:text-white transition-colors">SDR Prospecting</Link></li>
+                                <li><Link to="/services" className="hover:text-white transition-colors">Cold Email Marketing</Link></li>
+                                <li><Link to="/services" className="hover:text-white transition-colors">LinkedIn Growth</Link></li>
+                                <li><Link to="/services" className="hover:text-white transition-colors">CRM Pipeline Mgmt</Link></li>
+                            </ul>
+                        </div>
+
+                        <div className="space-y-3">
+                            <h4 className="text-sm font-semibold uppercase tracking-wider text-[#71845B]">Direct Contact</h4>
+                            <div className="space-y-2 text-sm text-gray-300">
+                                <p className="font-medium text-white">{SITE_CONFIG.founder.name}</p>
+                                <p className="text-xs text-gray-400">{SITE_CONFIG.founder.title}</p>
+                                <p className="pt-2">
+                                    <a href={`mailto:${SITE_CONFIG.founder.email}`} className="hover:underline flex items-center space-x-2 text-gray-300">
+                                        <Icon name="mail" className="w-3.5 h-3.5 text-[#71845B]" />
+                                        <span>{SITE_CONFIG.founder.email}</span>
+                                    </a>
+                                </p>
+                                <p>
+                                    <a href={SITE_CONFIG.social.whatsapp} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center space-x-2 text-gray-300">
+                                        <Icon name="phone" className="w-3.5 h-3.5 text-[#71845B]" />
+                                        <span>{SITE_CONFIG.founder.formattedPhone}</span>
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div className="pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-gray-400 space-y-4 md:space-y-0">
+                        <p>� {new Date().getFullYear()} {SITE_CONFIG.companyName}. All rights reserved.</p>
+                        <div className="flex items-center space-x-6">
+                            <span>Privacy Policy</span>
+                            <span>Terms & Conditions</span>
+                            <span>Compliance & Opt-out</span>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        );
+
+        // Home Page
+        const HomePage = ({ onOpenBooking }) => (
+            <div className="space-y-20 md:space-y-32 pb-16">
+                <section className="pt-8 md:pt-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                        <div className="lg:col-span-7 space-y-6">
+                            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-[#71845B]/10 border border-[#71845B]/20 text-[#71845B] text-xs font-semibold uppercase tracking-wider">
+                                <Icon name="sparkles" className="w-3.5 h-3.5" />
+                                <span>Predictable B2B Sales Pipelines</span>
+                            </div>
+
+                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif text-[#20251F] font-bold leading-[1.15] tracking-tight">
+                                Turn the Right Connections Into <span className="italic font-light text-[#71845B]">Real Business Growth.</span>
+                            </h1>
+
+                            <p className="text-base sm:text-lg text-[#6B7068] leading-relaxed max-w-2xl">
+                                Zyphora Growth helps companies identify ideal prospects, connect with decision-makers across US, UK, EU, and GCC markets, and build qualified sales pipelines through strategic lead generation and targeted outreach.
+                            </p>
+
+                            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                                <Link
+                                    to="/services"
+                                    className="py-3.5 px-6 rounded-xl bg-[#20251F] text-white font-medium hover:bg-[#71845B] transition-colors shadow-sm text-center flex items-center justify-center space-x-2"
+                                >
+                                    <span>Explore Our Services</span>
+                                    <Icon name="arrow-right" className="w-4 h-4" />
+                                </Link>
+                                <button
+                                    onClick={onOpenBooking}
+                                    className="py-3.5 px-6 rounded-xl bg-white border border-[#E5E0D5] text-[#20251F] font-medium hover:bg-[#F1EDE3] transition-colors text-center"
+                                >
+                                    Let's Talk Strategy
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="lg:col-span-5">
+                            <div className="relative rounded-2xl bg-white p-6 sm:p-8 border border-[#E5E0D5] shadow-xl space-y-6">
+                                <div className="flex items-center justify-between pb-4 border-b border-[#E5E0D5]">
+                                    <div className="flex items-center space-x-3">
+                                        <div className="w-10 h-10 rounded-xl bg-[#FAF8F2] flex items-center justify-center text-[#71845B]">
+                                            <Icon name="bar-chart-3" className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-sm font-semibold text-[#20251F]">Sales Development Engine</h3>
+                                            <p className="text-xs text-[#6B7068]">Active Campaign Monitoring</p>
+                                        </div>
+                                    </div>
+                                    <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+                                        Live Outreach
+                                    </span>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <div className="bg-[#FAF8F2] p-3.5 rounded-xl border border-[#E5E0D5] flex items-center justify-between">
+                                        <div>
+                                            <p className="text-xs font-semibold text-[#20251F]">Targeted Prospect Research</p>
+                                            <p className="text-[11px] text-[#6B7068]">1,250 Verified Contacts</p>
+                                        </div>
+                                        <span className="text-xs font-bold text-[#71845B]">100% Verified</span>
+                                    </div>
+                                    <div className="bg-[#FAF8F2] p-3.5 rounded-xl border border-[#E5E0D5] flex items-center justify-between">
+                                        <div>
+                                            <p className="text-xs font-semibold text-[#20251F]">Personalized Outreach</p>
+                                            <p className="text-[11px] text-[#6B7068]">Warm Email & LinkedIn</p>
+                                        </div>
+                                        <span className="text-xs font-bold text-[#20251F]">Active Sequence</span>
+                                    </div>
+                                    <div className="bg-[#20251F] text-white p-4 rounded-xl shadow-md flex items-center justify-between">
+                                        <div>
+                                            <p className="text-xs font-semibold text-white">Qualified Meetings</p>
+                                            <p className="text-[11px] text-gray-300">Ready for Account Execs</p>
+                                        </div>
+                                        <span className="text-xs font-bold text-[#71845B] bg-white/10 px-2 py-1 rounded">High Intent</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Services Preview */}
+                <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between">
+                        <div>
+                            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#71845B]">Services Overview</h2>
+                            <p className="text-3xl font-serif text-[#20251F] font-bold mt-1">Specialized Lead Generation Capabilities</p>
+                        </div>
+                        <Link to="/services" className="text-sm font-semibold text-[#71845B] hover:underline mt-2 md:mt-0">View All Services ?</Link>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {SERVICES_DATA.slice(0, 6).map((srv) => (
+                            <div key={srv.id} className="bg-white p-6 rounded-2xl border border-[#E5E0D5] space-y-3 flex flex-col justify-between">
+                                <div>
+                                    <h3 className="text-lg font-serif font-bold text-[#20251F]">{srv.title}</h3>
+                                    <p className="text-xs text-[#6B7068] mt-2 leading-relaxed">{srv.shortDesc}</p>
+                                </div>
+                                <Link to="/services" className="text-xs font-semibold text-[#71845B] hover:underline pt-2 inline-block">Explore Details ?</Link>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            </div>
+        );
+
+       
+ // Team Page
+ const TeamPage = ({ onOpenBooking }) => (
+     <div className="space-y-16 pb-16 pt-8">
+         <section className="max-w-7xl mx-auto px-4 text-center space-y-4">
+             <span className="text-xs font-semibold uppercase tracking-widest text-[#71845B]">
+                 Leadership & Mindset
+             </span>
+             <h1 className="text-3xl sm:text-5xl font-serif font-bold text-[#20251F]">
+                 The People Behind Your Growth
+             </h1>
+             <p className="text-base text-[#6B7068] max-w-2xl mx-auto">
+                 Meet the team helping businesses discover opportunities and build stronger B2B relationships.
+             </p>
+         </section>
+
+         <section className="max-w-4xl mx-auto px-4">
+             <div className="bg-white border border-[#E5E0D5] rounded-3xl p-8 shadow-sm grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                 <div className="md:col-span-4 text-center space-y-3">
+                     <div className="w-36 h-36 rounded-2xl overflow-hidden mx-auto">
+                         <img
+                             src="1.png"
+                             alt="Muhammad Zulqarnain - Founder of Zyphora Growth"
+                             className="w-full h-full object-cover"
+                         />
+                     </div>
+                     <div>
+                         <h3 className="text-lg font-bold text-[#20251F]">
+                             {SITE_CONFIG.founder.name}
+                         </h3>
+                         <p className="text-xs text-[#71845B] font-semibold">
+                             {SITE_CONFIG.founder.title}
+                         </p>
+                     </div>
+                 </div>
+
+                 <div className="md:col-span-8 space-y-4">
+                     <h4 className="text-xs font-semibold uppercase text-[#6B7068]"></h4>
+                     <p className="text-xs text-[#20251F] leading-relaxed">
+                         {SITE_CONFIG.founder.bio}
+                     </p>
+                     <a
+                         href={SITE_CONFIG.founder.linkedin}
+                         target="_blank"
+                         rel="noopener noreferrer"
+                         className="inline-flex items-center space-x-2 text-xs font-semibold text-[#71845B] hover:underline"
+                     >
+                         <span>Connect on LinkedIn</span>
+                         <Icon name="external-link" className="w-3.5 h-3.5" />
+                     </a>
+                 </div>
+             </div>
+         </section>
+     </div>
+ );
+
+
+        // Services Page
+        const ServicesPage = ({ onOpenBooking }) => (
+            <div className="space-y-16 pb-16 pt-8">
+                <section className="max-w-7xl mx-auto px-4 text-center space-y-4">
+                    <span className="text-xs font-semibold uppercase tracking-widest text-[#71845B]">Capabilities</span>
+                    <h1 className="text-3xl sm:text-5xl font-serif font-bold text-[#20251F]">Comprehensive B2B Solutions</h1>
+                </section>
+
+                <section className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {SERVICES_DATA.map((srv) => (
+                        <div key={srv.id} className="bg-white border border-[#E5E0D5] rounded-2xl p-6 space-y-4">
+                            <h3 className="text-xl font-serif font-bold text-[#20251F]">{srv.title}</h3>
+                            <p className="text-xs text-[#6B7068]">{srv.shortDesc}</p>
+                            <ul className="space-y-1.5 text-xs text-[#20251F]">
+                                {srv.deliverables.map((item, idx) => (
+                                    <li key={idx} className="flex items-start space-x-2">
+                                        <Icon name="check" className="w-3.5 h-3.5 text-[#71845B] shrink-0 mt-0.5" />
+                                        <span>{item}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={onOpenBooking} className="text-xs font-semibold text-[#71845B] hover:underline pt-2">
+                                Inquire About {srv.title} ?
+                            </button>
+                        </div>
+                    ))}
+                </section>
+            </div>
+        );
+
+        // Portfolio Page
+        const PortfolioPage = ({ onOpenBooking }) => {
+            const [filter, setFilter] = useState("All");
+            const filtered = filter === "All" ? PORTFOLIO_PROJECTS : PORTFOLIO_PROJECTS.filter(p => p.category === filter);
+
+            return (
+                <div className="space-y-12 pb-16 pt-8 max-w-7xl mx-auto px-4">
+                    <div className="text-center space-y-3">
+                        <span className="text-xs font-semibold uppercase tracking-widest text-[#71845B]">Case Models</span>
+                        <h1 className="text-3xl sm:text-5xl font-serif font-bold text-[#20251F]">Strategy & Growth in Action</h1>
+                    </div>
+
+                    <div className="flex justify-center flex-wrap gap-2">
+                        {["All", "Healthcare", "Logistics", "IT & Software", "Consulting", "Manufacturing"].map(cat => (
+                            <button
+                                key={cat}
+                                onClick={() => setFilter(cat)}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-medium ${filter === cat ? "bg-[#20251F] text-white" : "bg-white border border-[#E5E0D5] text-[#6B7068]"}`}
+                            >
+                                {cat}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {filtered.map(p => (
+                            <div key={p.id} className="bg-white border border-[#E5E0D5] rounded-2xl p-6 space-y-3">
+                                <span className="text-[10px] font-bold text-[#71845B] uppercase bg-[#FAF8F2] px-2.5 py-1 rounded-full border border-[#E5E0D5]">{p.industry}</span>
+                                <h3 className="text-lg font-serif font-bold text-[#20251F]">{p.title}</h3>
+                                <p className="text-xs text-[#6B7068]"><strong>Challenge:</strong> {p.challenge}</p>
+                                <p className="text-xs text-[#20251F]"><strong>Outcome:</strong> {p.outcomes}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        // Contact Page
+        const ContactPage = () => {
+            const [submitted, setSubmitted] = useState(false);
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                setSubmitted(true);
+            };
+
+            return (
+                <div className="space-y-12 pb-16 pt-8 max-w-5xl mx-auto px-4">
+                    <div className="text-center space-y-3">
+                        <span className="text-xs font-semibold uppercase tracking-widest text-[#71845B]">Contact Us</span>
+                        <h1 className="text-3xl sm:text-5xl font-serif font-bold text-[#20251F]">Let's Talk Strategy</h1>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                        <div className="md:col-span-5 bg-white p-6 rounded-2xl border border-[#E5E0D5] space-y-4 text-xs">
+                            <h3 className="text-base font-bold text-[#20251F]">Direct Channels</h3>
+                            <p><strong>Email:</strong> {SITE_CONFIG.founder.email}</p>
+                            <p><strong>Phone:</strong> {SITE_CONFIG.founder.formattedPhone}</p>
+                            <p><strong>Founder:</strong> {SITE_CONFIG.founder.name}</p>
+                        </div>
+
+                        <div className="md:col-span-7 bg-white p-6 rounded-2xl border border-[#E5E0D5]">
+                            {submitted ? (
+                                <div className="text-emerald-700 text-xs font-bold p-4 bg-emerald-50 rounded-xl">
+                                    Thank you! Your inquiry brief has been submitted successfully.
+                                </div>
+                            ) : (
+                                <form onSubmit={handleSubmit} className="space-y-4">
+                                    <input type="text" placeholder="Full Name *" required className="w-full p-3 text-xs bg-[#FAF8F2] border border-[#E5E0D5] rounded-xl" />
+                                    <input type="email" placeholder="Work Email *" required className="w-full p-3 text-xs bg-[#FAF8F2] border border-[#E5E0D5] rounded-xl" />
+                                    <input type="text" placeholder="Company Name *" required className="w-full p-3 text-xs bg-[#FAF8F2] border border-[#E5E0D5] rounded-xl" />
+                                    <textarea placeholder="Brief Description of Requirements *" rows="4" required className="w-full p-3 text-xs bg-[#FAF8F2] border border-[#E5E0D5] rounded-xl"></textarea>
+                                    <button type="submit" className="w-full py-3 bg-[#20251F] text-white rounded-xl text-xs font-semibold hover:bg-[#71845B]">
+                                        Submit Inquiry Brief
+                                    </button>
+                                </form>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Main App Wrapper
+        function App() {
+            const [isBookingOpen, setIsBookingOpen] = useState(false);
+
+            return (
+                <Router>
+                    <ScrollToTop />
+                    <div className="min-h-screen bg-[#FAF8F2] text-[#20251F] flex flex-col justify-between">
+                        <Navbar onOpenBooking={() => setIsBookingOpen(true)} />
+                        <main className="grow">
+                            <Routes>
+                                <Route path="/" element={<HomePage onOpenBooking={() => setIsBookingOpen(true)} />} />
+                                <Route path="/team" element={<TeamPage onOpenBooking={() => setIsBookingOpen(true)} />} />
+                                <Route path="/services" element={<ServicesPage onOpenBooking={() => setIsBookingOpen(true)} />} />
+                                <Route path="/portfolio" element={<PortfolioPage onOpenBooking={() => setIsBookingOpen(true)} />} />
+                                <Route path="/contact" element={<ContactPage />} />
+                            </Routes>
+                        </main>
+                        <Footer />
+                        <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
+                    </div>
+                </Router>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
